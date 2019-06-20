@@ -22,8 +22,8 @@ void configUART(void)
 
    UART6_IBRD_R = 130;                    // BRDI = int(120Mhz / 16 * 57600 bit/s)
    UART6_FBRD_R = 13;                     // BRDF = round((BRD - BRDI) * 2^6)
-   UART6_LCRH_R = 0x3 << 5;               // 8/N/1 Format
-   UART6_CTL_R |= (1 << 8) | (1 << 0);    // UART6 und Transmit enable
+   UART6_LCRH_R = (0x3 << 5);             // 8/N/1 Format
+   UART6_CTL_R |= ((1 << 8) | (1 << 0));  // UART6 und Transmit enable
 }
 
 void main(int argc, char const *argv[])
@@ -33,7 +33,7 @@ void main(int argc, char const *argv[])
 
    while (1)
    {
-      while((UART6_FR_R & (1 << 5)) != 0);
+      while((UART6_FR_R & 0x0020) != 0);
       UART6_DR_R = 'E';
    }
 }
