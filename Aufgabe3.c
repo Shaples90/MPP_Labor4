@@ -33,7 +33,7 @@ void main(int argc, char const *argv[])
 
    while (1)
    {
-      while((UART6_FR_R & 0x0020) != 0);
-      UART6_DR_R = 'E';
+      while((UART6_FR_R & 0x0020) != 0);  // Warte bis UART Transmit FIFO  voll ist
+      UART6_DR_R = 'E';                   // schreibe 0x45 (ASCII: E) ins UART6 Datenregister
    }
 }
