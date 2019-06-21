@@ -9,7 +9,6 @@ void configPorts(void)
    SYSCTL_RCGCGPIO_R |= (1 << 14);        // Port-Takt P freischalten
    while(!(SYSCTL_PRGPIO_R & (1 << 14))); // Warte auf Port-Takt-Aktivierung 
    GPIO_PORTP_DEN_R |= (1 << 1);          // GPIO-Funktion für P(1) enablen
-   GPIO_PORTP_DIR_R = (1 << 1);           // P(1) als Output-Signal definieren
    GPIO_PORTP_AFSEL_R |= (1 << 1);        // Alternative-Funktion für P(1) enablen
    GPIO_PORTP_PCTL_R |= 0x1 << (4 * 1);   // UART-Funktion für P(1) aktivieren
 }
