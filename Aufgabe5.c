@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include "tm4c1294ncpdt.h"
 
 #define BUFFERLENGTH 10                // frei definiert!
@@ -30,7 +31,7 @@ void configUART(void)
    UART6_IBRD_R = 104;                                // BRDI = int(BRD) = int(fcpu / 16 * bitrate) = int(16Mhz / 16 * 9600 bit/s)
    UART6_FBRD_R = 11;                                 // BRDF = round((BRD - BRDI) * 2^6)
    UART6_LCRH_R = (0x3 << 5);                         // 8/N/1 Format
-   UART6_CTL_R |= ((1 << 8) | (1 << 0) | (1 << 9));   // UART6 Transmit and Receive enable
+   UART6_CTL_R |= ((1 << 9) | (1 << 8) | (1 << 0));   // UART6 Transmit and Receive enable
 }
 
 void main(int argc, char const *argv[])
@@ -39,22 +40,41 @@ void main(int argc, char const *argv[])
    unsigned int i = 0;
 
    configPorts();
-   configUART();
+   configUART();                                               // Bitrate: 9600 bit/s, Format: 8/N/1
 
-   while (1)
+   while(1)
    {
-      while(i < BUFFERLENGTH)                // Loop wenn Buffer nicht voll ist
-      {     
-         while(UART6_FR_R & (1 << 4));       // warten bis Rx FIFO leer ist
-         buffer[i] = UART6_DR_R;             // byte vom UART6 Datenregister auslesen
-         if(buffer[i] == 0x04)               // break loop, wenn "EOT"
-         {
-            buffer[i] = 0x00;
-            break;                           // letztes Element mit '\0' ersetzen um string zu terminieren
-         }
-         i++;                                // Buffer-Inkrement
+      while(i < BUFFERLENGTH)                                  // Loop wenn Buffer nicht voll ist
+      {                       
+         while(UART6_FR_R & (1 << 4));                         // warten bis Rx FIFO leer ist
+         buffer[i] = UART6_DR_R;                               // byte vom UART6 Datenregister auslesen und zwischenspeichern
+         if(buffer[i] == 0x03)                                 // break loop, wenn "EOT"
+         {                 
+            buffer[i] = 0x00;                
+            break;                                             // letztes Element mit '\0' ersetzen um string zu terminieren
+         }                 
+         i++;                                                  // Buffer-Inkrement
       }
       printf("Content of Data Buffer(string): %s\n", buffer);
-      printf("Content of Data Buffer(integer): %d\n", buffer);
+
+      char snumber[8];
+
+      char *ascii_str = buffer;                                
+      int number = (int)strtol(ascii_str, NULL, 16);           // konvertiere hex-string zu dec-integer
+      itoa(number, snumber, 10);                               // konvertiere dec-integer zu dec-string
+      printf("%s\n", snumber);
+
+
+      while((UART6_FR_R & 0x0020) != 0);                       // Warte bis UART Transmit FIFO voll ist
+      UART6_DR_R = 0x7C;                                       // LC-Display löschen
+      while((UART6_FR_R & 0x0020) != 0);                       // Warte bis UART Transmit FIFO voll ist
+      UART6_DR_R = 0x2D;                                       // Cursor 1.Zeile
+
+      while(snumber[i] != '\0')                                // Loop solange bis zum Ende des Strings
+      {                 
+         while((UART6_FR_R & 0x0020) != 0);                    // Warte bis UART Transmit FIFO voll ist
+         UART6_DR_R = (snumber[i]);                            // Schreibe Zeichen ins UART Datenregister
+         i++;                                                  // Gehe zum nächsten Zeichen des Strings
+      }
    }
 }
