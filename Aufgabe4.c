@@ -4,10 +4,12 @@
 #include <stdint.h>
 #include "tm4c1294ncpdt.h"
 
+#define STRINGLENGTH 20                   // maxmale Zeichenanzahl in einer Zeile
+
 void wait(unsigned long timevalue)
 {
    unsigned int i = 0;
-   for(i; i < timevalue; i++);
+   for(i; i < timevalue; i++);            // Warte-Schleife
 }
 
 void configPorts(void)
@@ -33,79 +35,79 @@ void configUART(void)
 
 void lcDisplayFirstLine(void)
 {
-   unsigned char firstString[20] = "Versuchsteilnehmer:";
+   unsigned char firstString[STRINGLENGTH] = "Versuchsteilnehmer:";
    unsigned int i = 0;
 
-   while((UART6_FR_R & 0x0020) != 0);
+   while((UART6_FR_R & 0x0020) != 0);     // Warte bis UART Transmit FIFO voll ist
    UART6_DR_R = 0x7C;                     // LC-Display löschen
-   while((UART6_FR_R & 0x0020) != 0);
+   while((UART6_FR_R & 0x0020) != 0);     // Warte bis UART Transmit FIFO voll ist
    UART6_DR_R = 0x2D;                     // Cursor 1.Zeile
 
-   while(firstString[i] != '\0')
+   while(firstString[i] != '\0')          // Loop solange bis zum Ende des Strings
    {
-      while((UART6_FR_R & 0x0020) != 0);
-      UART6_DR_R = (firstString[i]);
-      i++;
+      while((UART6_FR_R & 0x0020) != 0);  // Warte bis UART Transmit FIFO voll ist
+      UART6_DR_R = (firstString[i]);      // Schreibe Zeichen ins UART Datenregister
+      i++;                                // Gehe zum nächsten Zeichen des Strings
    }
 }
 
 void lcDisplaySecondLine(void)
 {
-   unsigned char secondString[20] = "Mateo Narvaez";
+   unsigned char secondString[STRINGLENGTH] = "Mateo Narvaez";
    unsigned int i = 0;
 
-   while((UART6_FR_R & 0x0020) != 0);
+   while((UART6_FR_R & 0x0020) != 0);     // Warte bis UART Transmit FIFO voll ist
    UART6_DR_R = 0xFE;                     // Cursor 2.Zeile Anfang
-   while((UART6_FR_R & 0x0020) != 0);
+   while((UART6_FR_R & 0x0020) != 0);     // Warte bis UART Transmit FIFO voll ist
    UART6_DR_R = 0xC0;                     // Position 0
 
-   while(secondString[i] != '\0')
+   while(secondString[i] != '\0')         // Loop solange bis zum Ende des Strings
    {
-      while((UART6_FR_R & 0x0020) != 0);
-      UART6_DR_R = secondString[i];
-      i++;
+      while((UART6_FR_R & 0x0020) != 0);  // Warte bis UART Transmit FIFO voll ist
+      UART6_DR_R = secondString[i];       // Schreibe Zeichen ins UART Datenregister
+      i++;                                // Gehe zum nächsten Zeichen des Strings
    }
 }
 
 void lcDisplayThirdLine(void)
 {
-   unsigned char thirdString[20] = "Nikolas Rieder";
+   unsigned char thirdString[STRINGLENGTH] = "Nikolas Rieder";
    unsigned int i = 0;
 
-   while((UART6_FR_R & 0x0020) != 0);
+   while((UART6_FR_R & 0x0020) != 0);     // Warte bis UART Transmit FIFO voll ist
    UART6_DR_R = 0xFE;                     // Cursor 3.Zeile Anfang
-   while((UART6_FR_R & 0x0020) != 0);
+   while((UART6_FR_R & 0x0020) != 0);     // Warte bis UART Transmit FIFO voll ist
    UART6_DR_R = 0x94;                     // Position 0
 
-   while(thirdString[i] != '\0')
+   while(thirdString[i] != '\0')          // Loop solange bis zum Ende des Strings
    {
-      while((UART6_FR_R & 0x0020) != 0);
-      UART6_DR_R = thirdString[i];
-      i++;
+      while((UART6_FR_R & 0x0020) != 0);  // Warte bis UART Transmit FIFO voll ist
+      UART6_DR_R = thirdString[i];        // Schreibe Zeichen ins UART Datenregister
+      i++;                                // Gehe zum nächsten Zeichen des Strings
    }
 }
 
 void lcDisplayForthLine(void)
 {
-   unsigned char forthString[20] = "Dae-Jin Seon";
+   unsigned char forthString[STRINGLENGTH] = "Dae-Jin Seon";
    unsigned int i = 0;
 
-   while((UART6_FR_R & 0x0020) != 0);
+   while((UART6_FR_R & 0x0020) != 0);     // Warte bis UART Transmit FIFO voll ist
    UART6_DR_R = 0xFE;                     // Cursor 4.Zeile Anfang
-   while((UART6_FR_R & 0x0020) != 0);
+   while((UART6_FR_R & 0x0020) != 0);     // Warte bis UART Transmit FIFO voll ist
    UART6_DR_R = 0xD4;                     // Position 0
 
-   while(forthString[i] != '\0')
+   while(forthString[i] != '\0')          // Loop solange bis zum Ende des Strings
    {
-      while((UART6_FR_R & 0x0020) != 0);
-      UART6_DR_R = forthString[i];
-      i++;
+      while((UART6_FR_R & 0x0020) != 0);  // Warte bis UART Transmit FIFO voll ist
+      UART6_DR_R = forthString[i];        // Schreibe Zeichen ins UART Datenregister
+      i++;                                // Gehe zum nächsten Zeichen des Strings
    }
 }
 
 void main(int argc, char const *argv[])
 {
-   configPorts();             // P(1) für UART konfiguieren
+   configPorts();             
    configUART();              // Bitrate: 9600 bit/s, Format: 8/N/1
    
    while(1)
