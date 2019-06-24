@@ -64,7 +64,6 @@ void main(int argc, char const *argv[])
       itoa(number, snumber, 10);                               // konvertiere dec-integer zu dec-string
       printf("%s\n", snumber);
 
-
       while((UART6_FR_R & 0x0020) != 0);                       // Warte bis UART Transmit FIFO voll ist
       UART6_DR_R = 0x7C;                                       // LC-Display löschen
       while((UART6_FR_R & 0x0020) != 0);                       // Warte bis UART Transmit FIFO voll ist
