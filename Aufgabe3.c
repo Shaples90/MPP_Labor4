@@ -6,8 +6,8 @@
 
 void configPorts(void)
 {
-   SYSCTL_RCGCGPIO_R |= (1 << 14);        // Port-Takt P freischalten
-   while(!(SYSCTL_PRGPIO_R & (1 << 14))); // Warte auf Port-Takt-Aktivierung 
+   SYSCTL_RCGCGPIO_R |= (1 << 13);        // Port-Takt P freischalten
+   while(!(SYSCTL_PRGPIO_R & (1 << 13))); // Warte auf Port-Takt-Aktivierung 
    GPIO_PORTP_DEN_R |= (1 << 1);          // GPIO-Funktion für P(1) enablen
    GPIO_PORTP_AFSEL_R |= (1 << 1);        // Alternative-Funktion für P(1) enablen
    GPIO_PORTP_PCTL_R |= 0x1 << (4 * 1);   // UART-Funktion für P(1) aktivieren
@@ -19,8 +19,8 @@ void configUART1(void)
    while(!(SYSCTL_PRUART_R & (1 << 6)));  // Warte auf Takt-Aktivierung bei UART6
    UART6_CTL_R &= ~0x01;                  // UART6 für Konfiguration disablen
 
-   UART6_IBRD_R = 130;                    // BRDI = int(BRD) = int(fcpu / 16 * bitrate) = int(120Mhz / 16 * 57600 bit/s)
-   UART6_FBRD_R = 13;                     // BRDF = round((BRD - BRDI) * 2^6)
+   UART6_IBRD_R = 17;                    // BRDI = int(BRD) = int(fcpu / 16 * bitrate) = int(16Mhz / 16 * 57600 bit/s)
+   UART6_FBRD_R = 23;                     // BRDF = round((BRD - BRDI) * 2^6)
    UART6_LCRH_R = (0x3 << 5);             // 8/N/1 Format
    UART6_CTL_R |= ((1 << 8) | (1 << 0));  // UART6 und Transmit enable
 }
@@ -31,8 +31,8 @@ void configUART2(void)
    while(!(SYSCTL_PRUART_R & (1 << 6)));                 // Warte auf Takt-Aktivierung bei UART6
    UART6_CTL_R &= ~0x01;                                 // UART6 für Konfiguration disablen
 
-   UART6_IBRD_R = 65;                                    // BRDI = int(BRD) = int(fcpu / 16 * bitrate) = int(120Mhz / 16 * 115200 bit/s)
-   UART6_FBRD_R = 7;                                     // BRDF = round((BRD - BRDI) * 2^6)
+   UART6_IBRD_R = 8;                                    // BRDI = int(BRD) = int(fcpu / 16 * bitrate) = int(16Mhz / 16 * 115200 bit/s)
+   UART6_FBRD_R = 44;                                     // BRDF = round((BRD - BRDI) * 2^6)
    UART6_LCRH_R = ((0x2 << 5) | (1 << 1) | (1 << 3));    // 7/O/2 Format
    UART6_CTL_R |= ((1 << 8) | (1 << 0));                 // UART6 und Transmit enable
 }
@@ -43,8 +43,8 @@ void configUART3(void)
    while(!(SYSCTL_PRUART_R & (1 << 6)));                  // Warte auf Takt-Aktivierung bei UART6
    UART6_CTL_R &= ~0x01;                                  // UART6 für Konfiguration disablen
 
-   UART6_IBRD_R = 195;                                    // BRDI = int(BRD) = int(fcpu / 16 * bitrate) = int(120Mhz / 16 * 38400 bit/s)
-   UART6_FBRD_R = 20;                                     // BRDF = round((BRD - BRDI) * 2^6)
+   UART6_IBRD_R = 26;                                    // BRDI = int(BRD) = int(fcpu / 16 * bitrate) = int(16Mhz / 16 * 38400 bit/s)
+   UART6_FBRD_R = 3;                                     // BRDF = round((BRD - BRDI) * 2^6)
    UART6_LCRH_R = ((0x1 << 5) | (1 << 1) | (1 << 2));     // 6/E/1 Format
    UART6_CTL_R |= ((1 << 8) | (1 << 0));                  // UART6 und Transmit enable
 }
@@ -55,8 +55,8 @@ void configUART4(void)
    while(!(SYSCTL_PRUART_R & (1 << 6)));     // Warte auf Takt-Aktivierung bei UART6
    UART6_CTL_R &= ~0x01;                     // UART6 für Konfiguration disablen
 
-   UART6_IBRD_R = 390;                       // BRDI = int(BRD) = int(fcpu / 16 * bitrate) = int(120Mhz / 16 * 19200 bit/s)
-   UART6_FBRD_R = 40;                        // BRDF = round((BRD - BRDI) * 2^6)
+   UART6_IBRD_R = 52;                       // BRDI = int(BRD) = int(fcpu / 16 * bitrate) = int(16Mhz / 16 * 19200 bit/s)
+   UART6_FBRD_R = 5;                        // BRDF = round((BRD - BRDI) * 2^6)
    UART6_LCRH_R = ((0x0 << 5) | (1 << 3));   // 5/N/2 Format
    UART6_CTL_R |= ((1 << 8) | (1 << 0));     // UART6 und Transmit enable
 }
