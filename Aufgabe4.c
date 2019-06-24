@@ -27,7 +27,7 @@ void configUART(void)
 
    UART6_IBRD_R = 104;                    // BRDI = int(BRD) = int(fcpu / 16 * bitrate) = int(16Mhz / 16 * 9600 bit/s)
    UART6_FBRD_R = 11;                     // BRDF = round((BRD - BRDI) * 2^6)
-   UART6_LCRH_R = 0x60;             // 8/N/1 Format
+   UART6_LCRH_R = 0x60;                   // 8/N/1 Format
    UART6_CTL_R |= ((1 << 8) | (1 << 0));  // UART6 und Transmit enable
 }
 
@@ -105,13 +105,14 @@ void lcDisplayForthLine(void)
 
 void main(int argc, char const *argv[])
 {
-   configPorts();                         // P(1) für UART konfiguieren
-   configUART();                          // Bitrate: 9600 bit/s, Format: 8/N/1
+   configPorts();             // P(1) für UART konfiguieren
+   configUART();              // Bitrate: 9600 bit/s, Format: 8/N/1
+   
    while(1)
    {
-	   lcDisplayFirstLine();                  // 'Versuchsteilnehmer:' anzeigen
-	   lcDisplaySecondLine();                 // 'Mateo Narvaez' anzeigen
-	   lcDisplayThirdLine();                  // 'Nikolas Rieder' anzeigen
-	   lcDisplayForthLine();                  // 'Dae-Jin Seon' anzeigen
+	   lcDisplayFirstLine();   // 'Versuchsteilnehmer:' anzeigen
+	   lcDisplaySecondLine();  // 'Mateo Narvaez' anzeigen
+	   lcDisplayThirdLine();   // 'Nikolas Rieder' anzeigen
+	   lcDisplayForthLine();   // 'Dae-Jin Seon' anzeigen
    }
 }
