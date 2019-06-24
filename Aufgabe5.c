@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include "tm4c1294ncpdt.h"
 
-#define BUFFERLENGTH 10                // frei definiert!
+#define BUFFERLENGTH 12                // frei definiert!
 
 void wait(unsigned long timevalue)
 {
@@ -57,7 +57,7 @@ void main(int argc, char const *argv[])
       }
       printf("Content of Data Buffer(string): %s\n", buffer);
 
-      char snumber[8];
+      char snumber[BUFFERLENGTH];
 
       char *ascii_str = buffer;                                
       int number = (int)strtol(ascii_str, NULL, 16);           // konvertiere hex-string zu dec-integer
@@ -68,6 +68,8 @@ void main(int argc, char const *argv[])
       UART6_DR_R = 0x7C;                                       // LC-Display löschen
       while((UART6_FR_R & 0x0020) != 0);                       // Warte bis UART Transmit FIFO voll ist
       UART6_DR_R = 0x2D;                                       // Cursor 1.Zeile
+
+      i = 0;
 
       while(snumber[i] != '\0')                                // Loop solange bis zum Ende des Strings
       {                 
