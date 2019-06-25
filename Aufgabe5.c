@@ -48,7 +48,7 @@ void main(int argc, char const *argv[])
       {                       
          while(UART6_FR_R & (1 << 4));                         // warten bis Rx FIFO leer ist
          buffer[i] = UART6_DR_R;                               // byte vom UART6 Datenregister auslesen und zwischenspeichern
-         if(buffer[i] == 0x03)                                 // break loop, wenn "EOT"
+         if(buffer[i] == 0x03)                                 // break loop, wenn "End of Transmission"
          {                 
             buffer[i] = 0x00;                
             break;                                             // letztes Element mit '\0' ersetzen um string zu terminieren
@@ -62,7 +62,7 @@ void main(int argc, char const *argv[])
       char *ascii_str = buffer;                                
       int number = (int)strtol(ascii_str, NULL, 16);           // konvertiere hex-string zu dec-integer
       itoa(number, snumber, 10);                               // konvertiere dec-integer zu dec-string
-      printf("%s\n", snumber);
+      printf("Content of ID Buffer(string) %s\n", snumber);
 
       while((UART6_FR_R & 0x0020) != 0);                       // Warte bis UART Transmit FIFO voll ist
       UART6_DR_R = 0x7C;                                       // LC-Display löschen
