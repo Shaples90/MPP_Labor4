@@ -11,17 +11,17 @@ void wait(unsigned long timevalue)
 {
    unsigned int i = 0;
    for (i; i < timevalue; i++)
-      ;                                         // wait loop
-}
-
-void configPorts(void)
-{
-   SYSCTL_RCGCGPIO_R |= (1 << 13);              // Port-Takt P freischalten
-   while (!(SYSCTL_PRGPIO_R & (1 << 13)))
-      ;                                         // Warte auf Port-Takt-Aktivierung
-   GPIO_PORTP_DEN_R |= ((1 << 1) | (1 << 0));   // GPIO-Funktion für P(1:0) enablen
-   GPIO_PORTP_AFSEL_R |= ((1 << 1) | (1 << 0)); // Alternative-Funktion für P(1:0) enablen
-   GPIO_PORTP_PCTL_R |= ((1 << 4) | (1 << 0));  // UART-Funktion für P(0) U6Rx und P(1) U6Tx aktivieren
+      ;                                               // wait loop
+}     
+      
+void configPorts(void)     
+{     
+   SYSCTL_RCGCGPIO_R |= (1 << 13);                    // Port-Takt P freischalten
+   while (!(SYSCTL_PRGPIO_R & (1 << 13)))    
+      ;                                               // Warte auf Port-Takt-Aktivierung
+   GPIO_PORTP_DEN_R |= ((1 << 1) | (1 << 0));         // GPIO-Funktion für P(1:0) enablen
+   GPIO_PORTP_AFSEL_R |= ((1 << 1) | (1 << 0));       // Alternative-Funktion für P(1:0) enablen
+   GPIO_PORTP_PCTL_R |= ((1 << 4) | (1 << 0));        // UART-Funktion für P(0) U6Rx und P(1) U6Tx aktivieren
 }
 
 void configUART(void)
@@ -43,7 +43,7 @@ void main(int argc, char const *argv[])
    unsigned char orig[7] = "Orig: ";
 
    configPorts();
-   configUART();                       // Bitrate: 9600 bit/s, Format: 8/N/1
+   configUART();                                      // Bitrate: 9600 bit/s, Format: 8/N/1
 
    while (1)
    {
@@ -56,22 +56,21 @@ void main(int argc, char const *argv[])
       unsigned int i = 0;
       unsigned int l = 0;
 
-      while (i < BUFFERLENGTH)         // Loop wenn Buffer nicht voll ist
+      while (i < BUFFERLENGTH)                     // Loop wenn Buffer nicht voll ist
       {
-         while (UART6_FR_R & (1 << 4))
-            ;                          // warten bis Rx FIFO leer ist
-         buffer[i] = UART6_DR_R;       // byte vom UART6 Datenregister auslesen und zwischenspeichern
-         if (buffer[i] == 0x03)        // break loop, wenn "End of Transmission"
+         while (UART6_FR_R & (1 << 4));            // warten bis Rx FIFO leer ist
+         buffer[i] = UART6_DR_R;                   // byte vom UART6 Datenregister auslesen und zwischenspeichern
+         if (buffer[i] == 0x03)                    // break loop, wenn "End of Transmission"
          {
             buffer[i] = 0x00;
-            break;                     // letztes Element mit '\0' ersetzen um string zu terminieren
+            break;                                 // letztes Element mit '\0' ersetzen um string zu terminieren
          }
-         i++;                          // Buffer-Inkrement
+         i++;                                      // Buffer-Inkrement
       }
 
       for (k = 3; k < 11; k++)
       {
-         szNumbers[m] = buffer[k];     // aus Buffer die relevanten Daten zwischenspeichern
+         szNumbers[m] = buffer[k];                 // aus Buffer die relevanten Daten zwischenspeichern
          m++;
       }
 
@@ -79,33 +78,27 @@ void main(int argc, char const *argv[])
 
       sprintf(szNumbers, "ID Number: %ld\n", li);  // konvertiere long integer zu string
 
-      while ((UART6_FR_R & 0x0020) != 0)
-         ;                                         // Warte bis UART Transmit FIFO voll ist
+      while ((UART6_FR_R & 0x0020) != 0);          // Warte bis UART Transmit FIFO voll ist
       UART6_DR_R = 0x7C;                           // LC-Display löschen
-      while ((UART6_FR_R & 0x0020) != 0)
-         ;                                         // Warte bis UART Transmit FIFO voll ist
+      while ((UART6_FR_R & 0x0020) != 0);          // Warte bis UART Transmit FIFO voll ist
       UART6_DR_R = 0x2D;                           // Cursor 1. Zeile
 
       i = 0;
       while (szNumbers[i] != '\0')                 // Loop solange bis zum Ende des Strings
       {
-         while ((UART6_FR_R & 0x0020) != 0)
-            ;                                      // Warte bis UART Transmit FIFO voll ist
+         while ((UART6_FR_R & 0x0020) != 0);       // Warte bis UART Transmit FIFO voll ist
          UART6_DR_R = (szNumbers[i]);              // Sende ID-Nummer an LC-Display
          i++;                                      // Gehe zur nächsten ID-Zahl 
       }
       i = 0;
 
-      while ((UART6_FR_R & 0x0020) != 0)
-         ;                                         // Warte bis UART Transmit FIFO voll ist
+      while ((UART6_FR_R & 0x0020) != 0);          // Warte bis UART Transmit FIFO voll ist
       UART6_DR_R = 0xFE;                           // Cursor 2.Zeile Anfang
-      while ((UART6_FR_R & 0x0020) != 0)
-         ;                                         // Warte bis UART Transmit FIFO voll ist
+      while ((UART6_FR_R & 0x0020) != 0);          // Warte bis UART Transmit FIFO voll ist
       UART6_DR_R = 0xC0;                           // Position 0
       while (orig[i] != '\0')                      // Loop bis zum Stringende von orig
       {
-         while ((UART6_FR_R & 0x0020) != 0)        // Warte bis UART Transmit FIFO voll ist
-            ;
+         while ((UART6_FR_R & 0x0020) != 0);       // Warte bis UART Transmit FIFO voll ist
          UART6_DR_R = orig[i];                     // Sende 'Orig:' an LC-Display
          i++;                                      // Gehe zum nächsten Zeichen von orig
       }
@@ -114,8 +107,7 @@ void main(int argc, char const *argv[])
       l = 1;
       for (l; l < 13; l++)                         // Loop solange bis zum Ende des Strings
       {
-         while ((UART6_FR_R & 0x0020) != 0)
-            ;                                      // Warte bis UART Transmit FIFO voll ist
+         while ((UART6_FR_R & 0x0020) != 0);       // Warte bis UART Transmit FIFO voll ist
          UART6_DR_R = buffer[l];                   // Sende Originaldaten an LC-Display
       }
       l = 1;
