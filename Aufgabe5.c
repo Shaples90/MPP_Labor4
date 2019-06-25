@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include "tm4c1294ncpdt.h"
 
-#define BUFFERLENGTH 12                // frei definiert!
+#define BUFFERLENGTH 13                // frei definiert!
 
 void wait(unsigned long timevalue)
 {
@@ -16,7 +16,7 @@ void wait(unsigned long timevalue)
 void configPorts(void)
 {
    SYSCTL_RCGCGPIO_R |= (1 << 13);                 // Port-Takt P freischalten
-   while(!(SYSCTL_PRGPIO_R & (1 << 13)));          // Warte auf Port-Takt-Aktivierung 
+   while(!(SYSCTL_PRGPIO_R & (1 << 13)));          // Warte auf Port-Takt-Aktivierung
    GPIO_PORTP_DEN_R |= ((1 << 1) | (1 << 0));      // GPIO-Funktion für P(1:0) enablen
    GPIO_PORTP_AFSEL_R |= ((1 << 1) | (1 << 0));    // Alternative-Funktion für P(1:0) enablen
    GPIO_PORTP_PCTL_R |= ((1 << 4) | (1 << 0));     // UART-Funktion für P(0) U6Rx und P(1) U6Tx aktivieren
@@ -36,33 +36,44 @@ void configUART(void)
 
 void main(int argc, char const *argv[])
 {
-   unsigned char buffer[BUFFERLENGTH]; 
-   unsigned int i = 0;
+   char buffer[BUFFERLENGTH];
+   unsigned char orig[7] = "Orig: ";
 
    configPorts();
    configUART();                                               // Bitrate: 9600 bit/s, Format: 8/N/1
 
    while(1)
    {
+	  char szNumbers[8];
+	  long int li;
+	  char *pEnd;
+	  unsigned int j = 0;
+	  unsigned int k = 0;
+	  unsigned int m = 0;
+	  unsigned int i = 0;
+	  unsigned int l = 0;
+
       while(i < BUFFERLENGTH)                                  // Loop wenn Buffer nicht voll ist
-      {                       
+      {
          while(UART6_FR_R & (1 << 4));                         // warten bis Rx FIFO leer ist
          buffer[i] = UART6_DR_R;                               // byte vom UART6 Datenregister auslesen und zwischenspeichern
          if(buffer[i] == 0x03)                                 // break loop, wenn "End of Transmission"
-         {                 
-            buffer[i] = 0x00;                
+         {
+            buffer[i] = 0x00;
             break;                                             // letztes Element mit '\0' ersetzen um string zu terminieren
-         }                 
+         }
          i++;                                                  // Buffer-Inkrement
       }
-      printf("Content of Data Buffer(string): %s\n", buffer);
 
-      char snumber[BUFFERLENGTH];
+      for(k = 3; k < 11; k++)
+      {
+    	  szNumbers[m] = buffer[k];
+    	  m++;
+      }
 
-      char *ascii_str = buffer;                                
-      int number = (int)strtol(ascii_str, NULL, 16);           // konvertiere hex-string zu dec-integer
-      itoa(number, snumber, 10);                               // konvertiere dec-integer zu dec-string
-      printf("Content of ID Buffer(string) %s\n", snumber);
+      li = strtol(szNumbers, &pEnd, 16);           				// konvertiere hex-string zu dec-integer
+
+      sprintf(szNumbers, "ID Number: %ld\n", li);				// konvertiere dec-integer zu dec-string
 
       while((UART6_FR_R & 0x0020) != 0);                       // Warte bis UART Transmit FIFO voll ist
       UART6_DR_R = 0x7C;                                       // LC-Display löschen
@@ -70,12 +81,33 @@ void main(int argc, char const *argv[])
       UART6_DR_R = 0x2D;                                       // Cursor 1.Zeile
 
       i = 0;
-
-      while(snumber[i] != '\0')                                // Loop solange bis zum Ende des Strings
-      {                 
+      while(szNumbers[i] != '\0')                                // Loop solange bis zum Ende des Strings
+      {
          while((UART6_FR_R & 0x0020) != 0);                    // Warte bis UART Transmit FIFO voll ist
-         UART6_DR_R = (snumber[i]);                            // Schreibe Zeichen ins UART Datenregister
+         UART6_DR_R = (szNumbers[i]);                            // Schreibe Zeichen ins UART Datenregister
          i++;                                                  // Gehe zum nächsten Zeichen des Strings
       }
+      i = 0;
+
+      while((UART6_FR_R & 0x0020) != 0);                       // Warte bis UART Transmit FIFO voll ist
+      UART6_DR_R = 0xFE;                                       // Cursor 2.Zeile Anfang
+      while((UART6_FR_R & 0x0020) != 0);                       // Warte bis UART Transmit FIFO voll ist
+      UART6_DR_R = 0xC0;                                       // Position 0
+
+      while(orig[i] != '\0')
+      {
+    	  while((UART6_FR_R & 0x0020) != 0);
+    	  UART6_DR_R = orig[i];
+    	  i++;
+      }
+      i = 0;
+
+      l = 1;
+      for(l; l < 13; l++)                                // Loop solange bis zum Ende des Strings
+      {
+    	 while((UART6_FR_R & 0x0020) != 0);                    // Warte bis UART Transmit FIFO voll ist
+	     UART6_DR_R = buffer[l];                            // Schreibe Zeichen ins UART Datenregister
+	  }
+      l = 1;
    }
 }
