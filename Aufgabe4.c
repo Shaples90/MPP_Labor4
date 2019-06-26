@@ -109,12 +109,13 @@ void main(int argc, char const *argv[])
 {
    configPorts();             
    configUART();              // Bitrate: 9600 bit/s, Format: 8/N/1
+		
+   lcDisplayFirstLine();   // 'Versuchsteilnehmer:' anzeigen
+   lcDisplaySecondLine();  // 'Mateo Narvaez' anzeigen
+   lcDisplayThirdLine();   // 'Nikolas Rieder' anzeigen
+   lcDisplayForthLine();   // 'Dae-Jin Seon' anzeigen
    
    while(1)
    {
-	   lcDisplayFirstLine();   // 'Versuchsteilnehmer:' anzeigen
-	   lcDisplaySecondLine();  // 'Mateo Narvaez' anzeigen
-	   lcDisplayThirdLine();   // 'Nikolas Rieder' anzeigen
-	   lcDisplayForthLine();   // 'Dae-Jin Seon' anzeigen
    }
 }
