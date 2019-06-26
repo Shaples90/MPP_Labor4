@@ -78,6 +78,5 @@ void main(int argc, char const *argv[])
       while((UART6_FR_R & 0x0020) != 0);  // Warte bis UART Transmit FIFO voll ist
       UART6_DR_R = 'E';                   // schreibe 0x45 (ASCII: E) ins UART6 Datenregister
       GPIO_PORTD_AHB_DATA_R |= (1 << 0);  // Start der Datenübertragung signalisieren
-      wait(500);
    }
 }
